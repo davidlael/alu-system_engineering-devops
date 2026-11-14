@@ -1,31 +1,7 @@
-
 #!/usr/bin/env bash
+# Configure Nginx server with a 301 redirection from /redirect_me to YouTube
 
 apt-get update -y
-apt-get install -y nginx
-
-mkdir -p /var/www/html
-echo "Holberton School for the win!" > /var/www/html/index.html
-
-cat > /etc/nginx/sites-available/default <<'EOF'
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-
-    root /var/www/html;
-    index index.html;
-
-    location /redirect_me {
-        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
-    }
-
-    location / {
-        try_files $uri $uri/ =404;
-    }
-}
-EOF
-
-nginx -t
-service nginx restart
-
-
+apt-get install nginx -y
+sed -i 's#server_name _;#server_name _;\n\n\tlocation /redirect_me {\n\t\treturn 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\n\t}#' /etc/nginx/sites-available/default
+service nginx restart || service nginx reload
